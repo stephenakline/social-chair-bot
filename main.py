@@ -74,6 +74,8 @@ def send_message(recipient_id, message_text):
 def get_user_details(sender_id, message_text):
     profile = graph.get_object(sender_id)
     log(profile)
+    log(profile['first_name'])
+    # message = profile['first_name'] + ', ' + message_text
     return message_text
 
 def log(message):  # simple wrapper for logging to stdout on heroku
