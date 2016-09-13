@@ -59,7 +59,7 @@ def get_user_details(sender_id):
 
 def get_events_in_area(sender_id, location):
     api = eventful.API(os.environ["EVENTFUL_TOKEN"])
-    events = api.call('/events/search', l=location)
+    events = api.call('/events/search', q='This Weekend', l=location)
 
     first_name = get_user_details(sender_id)
 
@@ -67,10 +67,11 @@ def get_events_in_area(sender_id, location):
     log('first_name: ' + first_name)
     log("events[total_items]: " + events['total_items'])
 
-    # if events['total_items'] == 0:
-    #     resposne =  'Sorry ' + first_name + ', nothing came up with that location. Please try again.'
-    # else:
-    #     respone =  first_name + ', I see ' + events['events']['event'][0]['title'] + ' at ' + events['events']['event'][0]['venue_name']
+    if events['total_items'] == 0:
+        resposne =  'Sorry ' + first_name + ', nothing came up with that location. Please try again.'
+    else:
+        respone =  first_name + ', looks like there are ' + str(events['total_items']) + ' total events going on this weekend.''
+        # respone =  first_name + ', I see ' + events['events']['event'][0]['title'] + ' at ' + events['events']['event'][0]['venue_name']
     response = 'Sorry ' + first_name + ', nothing came up with that location. Please try again.'
     return response
 
