@@ -1,8 +1,8 @@
 import sys
 import os
 import json
+# import eventful
 import facebook
-import eventful
 
 import requests
 from flask import Flask, request
