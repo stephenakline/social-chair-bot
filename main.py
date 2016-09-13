@@ -1,7 +1,7 @@
 import sys
 import os
 import json
-# import eventful
+import eventful
 import facebook
 
 import requests
@@ -73,8 +73,8 @@ def send_message(recipient_id, message_text):
 
 def get_user_details(sender_id, message_text):
     profile = graph.get_object(sender_id)
-    message = profile['first_name'] + ', ' + message_text
-    return message
+    log(profile)
+    return message_text
 
 def log(message):  # simple wrapper for logging to stdout on heroku
     print str(message)
