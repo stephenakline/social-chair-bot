@@ -45,9 +45,7 @@ def webhook():
                     recipient_id = messaging_event["recipient"]["id"]  # the recipient's ID, which should be your page's facebook ID
                     message_text = messaging_event["message"]["text"]  # the message's text
 
-                    if message_text == 'generic':
-                        send_generic_message(sender_id, message_text)
-                    elif sender_id != os.environ["SOCIAL_CHAIR_BOT"]:
+                    if sender_id != os.environ["SOCIAL_CHAIR_BOT"]:
                         get_events_in_area(sender_id, message_text)
 
                 if messaging_event.get("delivery"):  # delivery confirmation
@@ -75,8 +73,8 @@ def get_events_in_area(sender_id, location):
     else:
         response =  first_name + ', looks like there are ' + str(events['total_items']) + ' total events going on this weekend.'
         send_message(sender_id, response)
-        response =  'The first listed event is ' + events['events']['event'][0]['title'] + ' at ' + events['events']['event'][0]['venue_name'] + '.'
-        send_message(sender_id, response)
+        # response =  'The first listed event is ' + events['events']['event'][0]['title'] + ' at ' + events['events']['event'][0]['venue_name'] + '.'
+        send_generic_message(sender_id, event['events']['event'][0])
 
 def send_message(recipient_id, message_text):
     log("sending message to {recipient}: {text}".format(recipient=recipient_id, text=message_text))
@@ -100,7 +98,7 @@ def send_message(recipient_id, message_text):
     #     log(r.status_code)
     #     log(r.text)
 
-def send_generic_message(recipient_id, message_text):
+def send_generic_message(recipient_id, event):
     log("sending generic message to {recipient}".format(recipient=recipient_id))
 
     params = {
@@ -120,20 +118,20 @@ def send_generic_message(recipient_id, message_text):
                     "template_type":"generic",
                     "elements":[
                     {
-                        "title":"Welcome to Peter\'s Hats",
-                        "item_url":"https://petersfancybrownhats.com",
-                        "image_url":"https://petersfancybrownhats.com/company_image.png",
-                        "subtitle":"We\'ve got the right hat for everyone.",
+                        "title":event['title'],
+                        "item_url":"https://eventful.com",
+                        "image_url":event['image']['small']['url'],
+                        "subtitle":event['venue_name'],
                         "buttons":[
                         {
                             "type":"web_url",
-                            "url":"https://petersfancybrownhats.com",
+                            "url":"https://eventful.com",
                             "title":"View Website"
                             },
                         {
-                            "type":"postback",
-                            "title":"Start Chatting",
-                            "payload":"DEVELOPER_DEFINED_PAYLOAD"
+                            "type":"web_url",
+                            "url":event['url'],
+                            "title":"View Event"
                         }]
                     }]
                 }
