@@ -1,7 +1,7 @@
 import sys
 import os
 import json
-# import facebook
+import facebook
 
 import requests
 from flask import Flask, request
@@ -66,9 +66,9 @@ def send_message(recipient_id, message_text):
         }
     })
     r = requests.post("https://graph.facebook.com/v2.6/me/messages", params=params, headers=headers, data=data)
-    if r.status_code != 200:
-        log(r.status_code)
-        log(r.text)
+    # if r.status_code != 200:
+    #     log(r.status_code)
+    #     log(r.text)
 
 def get_user_details(sender_id, message_text):
     profile = graph.get_object(sender_id)
