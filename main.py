@@ -69,7 +69,7 @@ def send_message(recipient_id, message_text):
 def get_user_details(sender_id):
     user_details_url = "https://graph.facebook.com/v2.6/%s"%sender_id
     user_details_params = {'fields':'first_name,last_name,profile_pic', 'access_token':'token'}
-    log(user_details['first_name'])
+    log(user_details_params)
 
 def log(message):  # simple wrapper for logging to stdout on heroku
     print str(message)
