@@ -63,7 +63,9 @@ def get_events_in_area(sender_id, location):
 
     first_name = get_user_details(sender_id)
 
-    log('location: ' + location + '; first_name: ' + first_name)
+    log('location: ' + location)
+    log('first_name: ' + first_name)
+    log("events[total_items]: " + events['total_items'])
 
     # if events['total_items'] == 0:
     #     resposne =  'Sorry ' + first_name + ', nothing came up with that location. Please try again.'
