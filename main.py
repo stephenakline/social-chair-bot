@@ -68,11 +68,11 @@ def get_events_in_area(sender_id, location):
     log("events[total_items]: " + events['total_items'])
 
     if events['total_items'] == 0:
-        resposne =  'Sorry ' + first_name + ', nothing came up with that location. Please try again.'
+        response =  'Sorry ' + first_name + ', nothing came up with that location. Please try again.'
     else:
-        respone =  first_name + ', looks like there are ' + str(events['total_items']) + ' total events going on this weekend.''
+        response =  first_name + ', looks like there are ' + str(events['total_items']) + ' total events going on this weekend.''
         # respone =  first_name + ', I see ' + events['events']['event'][0]['title'] + ' at ' + events['events']['event'][0]['venue_name']
-    response = 'Sorry ' + first_name + ', nothing came up with that location. Please try again.'
+    # response = 'Sorry ' + first_name + ', nothing came up with that location. Please try again.'
     return response
 
 def send_message(recipient_id, message_text):
