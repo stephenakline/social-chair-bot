@@ -39,11 +39,8 @@ def webhook():
                     message_text = messaging_event["message"]["text"]  # the message's text
 
                     if sender_id != os.environ["SOCIAL_CHAIR_BOT"]:
-                        response = get_events_in_area(sender_id, message_text)
-                    else:
-                        response = 'something else'
+                        get_events_in_area(sender_id, message_text)
 
-                    send_message(sender_id, response)
                 if messaging_event.get("delivery"):  # delivery confirmation
                     pass
                 if messaging_event.get("optin"):  # optin confirmation
@@ -67,13 +64,14 @@ def get_events_in_area(sender_id, location):
     log('first_name: ' + first_name)
     log("events[total_items]: " + events['total_items'])
 
-    if events['total_items'] == 0:
+    if events['total_items'] == '0':
         response =  'Sorry ' + first_name + ', nothing came up with that location. Please try again.'
+        send_message(sender_id, response)
     else:
         response =  first_name + ', looks like there are ' + str(events['total_items']) + ' total events going on this weekend.'
-        # respone =  first_name + ', I see ' + events['events']['event'][0]['title'] + ' at ' + events['events']['event'][0]['venue_name']
-    # response = 'Sorry ' + first_name + ', nothing came up with that location. Please try again.'
-    return response
+        send_message(sender_id, response)
+        response =  'The first listed event is ' + events['events']['event'][0]['title'] + ' at ' + events['events']['event'][0]['venue_name'] + '.'
+        send_message(sender_id, response)
 
 def send_message(recipient_id, message_text):
     log("sending message to {recipient}: {text}".format(recipient=recipient_id, text=message_text))
