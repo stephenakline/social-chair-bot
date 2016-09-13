@@ -38,7 +38,8 @@ def webhook():
                     recipient_id = messaging_event["recipient"]["id"]  # the recipient's ID, which should be your page's facebook ID
                     message_text = messaging_event["message"]["text"]  # the message's text
 
-                    send_message(sender_id, "got it, thanks!")
+                    if sender_id != '1401992549834889':
+                        send_message(sender_id, "got it, thanks!")
                 if messaging_event.get("delivery"):  # delivery confirmation
                     pass
                 if messaging_event.get("optin"):  # optin confirmation
@@ -74,7 +75,7 @@ def send_message(recipient_id, message_text):
 def get_user_details(sender_id, message_text):
     profile = graph.get_object(sender_id)
     log(profile)
-    # log(profile['first_name'])
+    log(profile['first_name'])
     # message = profile['first_name'] + ', ' + message_text
     return message_text
 
