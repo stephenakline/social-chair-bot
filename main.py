@@ -55,7 +55,7 @@ def webhook():
 def get_user_details(sender_id):
     profile = graph.get_object(sender_id)
     message = profile['first_name']
-    return message_text
+    return message
 
 def get_events_in_area(sender_id, location):
     api = eventful.API(os.environ["EVENTFUL_TOKEN"])
