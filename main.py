@@ -63,10 +63,14 @@ def get_events_in_area(sender_id, location):
 
     first_name = get_user_details(sender_id)
 
-    if events['total_items'] == 0:
-        return 'Sorry ' + first_name + ', nothing came up with that location. Please try again.'
-    else:
-        return first_name + ', I see ' + events['events']['event'][0]['title'] + ' at ' + events['events']['event'][0]['venue_name']
+    log('location: ' + location + '; first_name: ' + first_name)
+
+    # if events['total_items'] == 0:
+    #     resposne =  'Sorry ' + first_name + ', nothing came up with that location. Please try again.'
+    # else:
+    #     respone =  first_name + ', I see ' + events['events']['event'][0]['title'] + ' at ' + events['events']['event'][0]['venue_name']
+    respone = 'Sorry ' + first_name + ', nothing came up with that location. Please try again.'
+    return response
 
 def send_message(recipient_id, message_text):
     log("sending message to {recipient}: {text}".format(recipient=recipient_id, text=message_text))
