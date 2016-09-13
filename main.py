@@ -2,6 +2,7 @@ import sys
 import os
 import json
 import facebook
+import eventful
 
 import requests
 from flask import Flask, request
@@ -72,7 +73,7 @@ def send_message(recipient_id, message_text):
 
 def get_user_details(sender_id, message_text):
     profile = graph.get_object(sender_id)
-    message = profile['first_name'] + ', you said: ' + message_text
+    message = profile['first_name'] + ', ' + message_text
     return message
 
 def log(message):  # simple wrapper for logging to stdout on heroku
