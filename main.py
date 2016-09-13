@@ -12,6 +12,8 @@ main = Flask(__name__)
 graph = facebook.GraphAPI(access_token=os.environ["PAGE_ACCESS_TOKEN"],
                             version='2.2')
 
+GREETING = "Hello! Social Chair, at your service. Tell me what city you are in, and I will tell you what is going on this weekend."
+
 @main.route('/', methods=['GET'])
 def verify():
     # when the endpoint is registered as a webhook, it must echo back
@@ -22,7 +24,6 @@ def verify():
         return request.args["hub.challenge"], 200
 
     return "Hello world", 200
-
 
 @main.route('/', methods=['POST'])
 def webhook():
@@ -95,9 +96,27 @@ def send_message(recipient_id, message_text):
     #     log(r.status_code)
     #     log(r.text)
 
+def set_greeting():
+    log("set greeting: {text}".format(text=GREETING))
+
+    params = {
+        "access_token": os.environ["PAGE_ACCESS_TOKEN"]
+    }
+    headers = {
+        "Content-Type": "application/json"
+    }
+    data = json.dumps({
+        "setting_type":"greeting",
+        "greeting": {
+            "text": message_text
+        }
+    })
+    r = requests.post("https://graph.facebook.com/v2.6/me/thread_settings", params=params, headers=headers, data=data)
+
 def log(message):  # simple wrapper for logging to stdout on heroku
     print str(message)
     sys.stdout.flush()
 
 if __name__ == '__main__':
+    set_greeting()
     main.run(debug=True)
