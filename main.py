@@ -38,9 +38,12 @@ def webhook():
                     recipient_id = messaging_event["recipient"]["id"]  # the recipient's ID, which should be your page's facebook ID
                     message_text = messaging_event["message"]["text"]  # the message's text
 
-                    response = get_events_in_area(sender_id, message_text)
+                    if sender_id != os.environ["SOCIAL_CHAIR_BOT"]:
+                        response = get_events_in_area(sender_id, message_text)
+                    else:
+                        response = 'something else'
 
-                    send_message(sender_id, "got it, thanks!")
+                    send_message(sender_id, response)
                 if messaging_event.get("delivery"):  # delivery confirmation
                     pass
                 if messaging_event.get("optin"):  # optin confirmation
@@ -49,22 +52,21 @@ def webhook():
                     pass
     return "ok", 200
 
-def get_user_details(sender_id, message_text):
+def get_user_details(sender_id):
     profile = graph.get_object(sender_id)
-    message = profile['first_name'] + ', ' + message_text
+    message = profile['first_name']
     return message_text
 
 def get_events_in_area(sender_id, location):
     api = eventful.API(os.environ["EVENTFUL_TOKEN"])
     events = api.call('/events/search', l=location)
 
-    if sender_id != os.environ["SOCIAL_CHAIR_BOT"]:
-        first_name = get_user_details(sender_id, message_text)
+    first_name = get_user_details(sender_id)
 
     if events['total_items'] == 0:
         return 'Sorry ' + first_name + ', nothing came up with that location. Please try again.'
     else:
-        return 'Stephen, I see ' + events['events']['event'][0]['title'] + ' at ' + events['events']['event'][0]['venue_name']
+        return first_name + ', I see ' + events['events']['event'][0]['title'] + ' at ' + events['events']['event'][0]['venue_name']
 
 def send_message(recipient_id, message_text):
     log("sending message to {recipient}: {text}".format(recipient=recipient_id, text=message_text))
