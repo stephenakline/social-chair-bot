@@ -1,11 +1,15 @@
 import os
 import sys
 import json
+import facebook
 
 import requests
 from flask import Flask, request
 
 main = Flask(__name__)
+
+graph = facebook.GraphAPI(access_token=os.environ["PAGE_ACCESS_TOKEN"],
+                            version='2.2')
 
 @main.route('/', methods=['GET'])
 def verify():
@@ -45,7 +49,7 @@ def webhook():
 def send_message(recipient_id, message_text):
     log("sending message to {recipient}: {text}".format(recipient=recipient_id, text=message_text))
 
-    get_user_details(recipient_id)
+    message_text = get_user_details(recipient_id, message_text)
 
     params = {
         "access_token": os.environ["PAGE_ACCESS_TOKEN"]
@@ -66,10 +70,10 @@ def send_message(recipient_id, message_text):
         log(r.status_code)
         log(r.text)
 
-def get_user_details(sender_id):
-    user_details_url = "https://graph.facebook.com/v2.6/%s"%sender_id
-    user_details_params = {'fields':'first_name,last_name,profile_pic', 'access_token':'token'}
-    log(user_details_url)
+def get_user_details(sender_id, message_text):
+    profile = graph.get_object(sender_id)
+    message = profile['first_name'] + ', ' + message_text
+    return message
 
 def log(message):  # simple wrapper for logging to stdout on heroku
     print str(message)
