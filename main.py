@@ -12,6 +12,12 @@ main = Flask(__name__)
 graph = facebook.GraphAPI(access_token=os.environ["PAGE_ACCESS_TOKEN"],
                             version='2.2')
 
+'''
+TODO: create method to send 'generic' messages that include a link to the event via eventful (just one for now)
+TODO: same as above but with 3, similar to the tutorial seen before when could click right
+TODO: create method to update greeting
+'''
+
 GREETING = "Hello! Social Chair, at your service. Tell me what city you are in, and I will tell you what is going on this weekend."
 
 @main.route('/', methods=['GET'])
@@ -39,7 +45,9 @@ def webhook():
                     recipient_id = messaging_event["recipient"]["id"]  # the recipient's ID, which should be your page's facebook ID
                     message_text = messaging_event["message"]["text"]  # the message's text
 
-                    if sender_id != os.environ["SOCIAL_CHAIR_BOT"]:
+                    if message_text == 'generic':
+                        send_generic_message(sender_id, message_text)
+                    elif sender_id != os.environ["SOCIAL_CHAIR_BOT"]:
                         get_events_in_area(sender_id, message_text)
 
                 if messaging_event.get("delivery"):  # delivery confirmation
@@ -60,10 +68,6 @@ def get_events_in_area(sender_id, location):
     events = api.call('/events/search', q='This Weekend', l=location)
 
     first_name = get_user_details(sender_id)
-
-    log('location: ' + location)
-    log('first_name: ' + first_name)
-    log("events[total_items]: " + events['total_items'])
 
     if events['total_items'] == '0':
         response =  'Sorry ' + first_name + ', nothing came up with that location. Please try again.'
@@ -95,6 +99,48 @@ def send_message(recipient_id, message_text):
     # if r.status_code != 200:
     #     log(r.status_code)
     #     log(r.text)
+
+def send_generic_message(recipient_id, message_text):
+    log("sending generic message to {recipient}".format(recipient=recipient_id))
+
+    params = {
+        "access_token": os.environ["PAGE_ACCESS_TOKEN"]
+    }
+    headers = {
+        "Content-Type": "application/json"
+    }
+    data = json.dumps({
+        "recipient": {
+            "id": recipient_id
+        },
+        "message":{
+            "attachment":{
+                "type":"template",
+                "payload":{
+                    "template_type":"generic",
+                    "elements":[
+                    {
+                        "title":"Welcome to Peter\'s Hats",
+                        "item_url":"https://petersfancybrownhats.com",
+                        "image_url":"https://petersfancybrownhats.com/company_image.png",
+                        "subtitle":"We\'ve got the right hat for everyone.",
+                        "buttons":[
+                        {
+                            "type":"web_url",
+                            "url":"https://petersfancybrownhats.com",
+                            "title":"View Website"
+                            },
+                        {
+                            "type":"postback",
+                            "title":"Start Chatting",
+                            "payload":"DEVELOPER_DEFINED_PAYLOAD"
+                        }]
+                    }]
+                }
+            }
+        }
+    })
+    r = requests.post("https://graph.facebook.com/v2.6/me/messages", params=params, headers=headers, data=data)
 
 def set_greeting():
     log("set greeting: {text}".format(text=GREETING))
