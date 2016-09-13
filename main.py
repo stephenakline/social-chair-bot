@@ -50,7 +50,7 @@ def webhook():
 def send_message(recipient_id, message_text):
     log("sending message to {recipient}: {text}".format(recipient=recipient_id, text=message_text))
 
-    if sender_id != '1401992549834889':
+    if recipient_id != '1401992549834889':
         message_text = get_user_details(recipient_id, message_text)
 
     params = {
