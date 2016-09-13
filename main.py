@@ -70,7 +70,7 @@ def get_events_in_area(sender_id, location):
     if events['total_items'] == 0:
         response =  'Sorry ' + first_name + ', nothing came up with that location. Please try again.'
     else:
-        response =  first_name + ', looks like there are ' + str(events['total_items']) + ' total events going on this weekend.''
+        response =  first_name + ', looks like there are ' + str(events['total_items']) + ' total events going on this weekend.'
         # respone =  first_name + ', I see ' + events['events']['event'][0]['title'] + ' at ' + events['events']['event'][0]['venue_name']
     # response = 'Sorry ' + first_name + ', nothing came up with that location. Please try again.'
     return response
