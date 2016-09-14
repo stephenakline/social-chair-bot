@@ -15,6 +15,7 @@ graph = facebook.GraphAPI(access_token=os.environ["PAGE_ACCESS_TOKEN"],
 '''
 TODO: create method to send 'generic' messages that include a link to the event via eventful (just one for now)
 TODO: same as above but with 3, similar to the tutorial seen before when could click right
+TODO: use Yahoo Weather's method of confirming location before sending it to API
 TODO: create method to update greeting
 '''
 
@@ -122,7 +123,7 @@ def send_generic_message(recipient_id, event):
                         "title":event[0]['title'],
                         "subtitle":event[0]['venue_name'],
                         # "item_url":"https://eventful.com",
-                        "image_url":event[0]['image']['small']['url'],
+                        "image_url":event[0]['image']['medium']['url'],
                         "buttons": [{
                             "type":"web_url",
                             "url":event[0]['url'],
@@ -132,7 +133,7 @@ def send_generic_message(recipient_id, event):
                         "title":event[1]['title'],
                         "subtitle":event[1]['venue_name'],
                         # "item_url":"https://eventful.com",
-                        "image_url":event[1]['image']['small']['url'],
+                        "image_url":event[1]['image']['medium']['url'],
                         "buttons": [{
                             "type":"web_url",
                             "url":event[1]['url'],
