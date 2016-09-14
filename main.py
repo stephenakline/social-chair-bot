@@ -41,7 +41,6 @@ def webhook():
         for entry in data["entry"]:
             for messaging_event in entry["messaging"]:
                 if messaging_event.get("message"):  # someone sent us a message
-                    log(messaging_event)
                     sender_id = messaging_event["sender"]["id"]        # the facebook ID of the person sending you the message
                     recipient_id = messaging_event["recipient"]["id"]  # the recipient's ID, which should be your page's facebook ID
                     try:
@@ -77,7 +76,7 @@ def get_events_in_area(sender_id, location):
         response =  first_name + ', looks like there are ' + str(events['total_items']) + ' total events going on this weekend.'
         send_message(sender_id, response)
         # response =  'The first listed event is ' + events['events']['event'][0]['title'] + ' at ' + events['events']['event'][0]['venue_name'] + '.'
-        send_generic_message(sender_id, events['events']['event'][0])
+        send_generic_message(sender_id, events['events']['event'])
 
 def send_message(recipient_id, message_text):
     log("sending message to {recipient}: {text}".format(recipient=recipient_id, text=message_text))
@@ -114,28 +113,39 @@ def send_generic_message(recipient_id, event):
         "recipient": {
             "id": recipient_id
         },
-        "message":{
-            "attachment":{
+        "message": {
+            "attachment": {
                 "type":"template",
-                "payload":{
+                "payload": {
                     "template_type":"generic",
-                    "elements":[
-                    {
-                        "title":event['title'],
-                        "item_url":"https://eventful.com",
-                        "image_url":event['image']['small']['url'],
-                        "subtitle":event['venue_name'],
-                        "buttons":[
-                        {
+                    "elements": [{
+                        "title":event[0]['title'],
+                        "subtitle":event[0]['venue_name'],
+                        # "item_url":"https://eventful.com",
+                        "image_url":event[0]['image']['small']['url'],
+                        "buttons": [{
                             "type":"web_url",
                             "url":"https://eventful.com",
                             "title":"View Website"
-                            },
-                        {
+                        }, {
                             "type":"web_url",
-                            "url":event['url'],
+                            "url":event[0]['url'],
                             "title":"View Event"
-                        }]
+                        }],
+                    }, {
+                        "title":event[1]['title'],
+                        "subtitle":event[1]['venue_name'],
+                        # "item_url":"https://eventful.com",
+                        "image_url":event[1]['image']['small']['url'],
+                        "buttons": [{
+                            "type":"web_url",
+                            "url":"https://eventful.com",
+                            "title":"View Website"
+                        }, {
+                            "type":"web_url",
+                            "url":event[1]['url'],
+                            "title":"View Event"
+                        }],
                     }]
                 }
             }
