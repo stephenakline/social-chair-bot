@@ -77,7 +77,7 @@ def get_events_in_area(sender_id, location):
         response =  first_name + ', looks like there are ' + str(events['total_items']) + ' total events going on this weekend.'
         send_message(sender_id, response)
         # response =  'The first listed event is ' + events['events']['event'][0]['title'] + ' at ' + events['events']['event'][0]['venue_name'] + '.'
-        send_generic_message(sender_id, event['events']['event'][0])
+        send_generic_message(sender_id, events['events']['event'][0])
 
 def send_message(recipient_id, message_text):
     log("sending message to {recipient}: {text}".format(recipient=recipient_id, text=message_text))
