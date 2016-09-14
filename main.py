@@ -105,7 +105,7 @@ def send_generic_message(recipient_id, events):
     log("sending generic message to {recipient}".format(recipient=recipient_id))
 
     list_of_cards = []
-    number_of_cards = min(3, int(events['total_items']))
+    number_of_cards = 3 # min(3, int(events['total_items']))
     for i in range(number_of_cards):
         card = [{
             "title":events[i]['title'],
