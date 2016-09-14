@@ -66,7 +66,7 @@ def get_user_details(sender_id):
 
 def get_events_in_area(sender_id, location):
     api = eventful.API(os.environ["EVENTFUL_TOKEN"])
-    events = api.call('/events/search', q='This Weekend', l=location)
+    events = api.call('/events/search', t='This Weekend', l=location)
 
     first_name = get_user_details(sender_id)
 
