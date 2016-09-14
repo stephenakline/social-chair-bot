@@ -107,7 +107,7 @@ def send_generic_message(recipient_id, event):
     list_of_cards = []
     number_of_cards = min(3, int(events['total_items']))
     for i in range(number_of_cards):
-        card = {
+        card = [{
             "title":event[i]['title'],
             "subtitle":event[i]['venue_name'],
             # "item_url":"https://eventful.com",
@@ -115,9 +115,9 @@ def send_generic_message(recipient_id, event):
             "buttons": [{
                 "type":"web_url",
                 "url":event[i]['url'],
-                "title":"View Event"}
-        }
-        list_of_cards.extend(card)
+                "title":"View Event"}]
+        }]
+        list_of_cards += card
 
     params = {
         "access_token": os.environ["PAGE_ACCESS_TOKEN"]
