@@ -101,20 +101,20 @@ def send_message(recipient_id, message_text):
     #     log(r.status_code)
     #     log(r.text)
 
-def send_generic_message(recipient_id, event):
+def send_generic_message(recipient_id, events):
     log("sending generic message to {recipient}".format(recipient=recipient_id))
 
     list_of_cards = []
     number_of_cards = min(3, int(events['total_items']))
     for i in range(number_of_cards):
         card = [{
-            "title":event[i]['title'],
-            "subtitle":event[i]['venue_name'],
+            "title":events[i]['title'],
+            "subtitle":events[i]['venue_name'],
             # "item_url":"https://eventful.com",
-            "image_url":event[i]['image']['medium']['url'],
+            "image_url":events[i]['image']['medium']['url'],
             "buttons": [{
                 "type":"web_url",
-                "url":event[i]['url'],
+                "url":events[i]['url'],
                 "title":"View Event"}]
         }]
         list_of_cards += card
