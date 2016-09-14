@@ -125,10 +125,6 @@ def send_generic_message(recipient_id, event):
                         "image_url":event[0]['image']['small']['url'],
                         "buttons": [{
                             "type":"web_url",
-                            "url":"https://eventful.com",
-                            "title":"View Website"
-                        }, {
-                            "type":"web_url",
                             "url":event[0]['url'],
                             "title":"View Event"
                         }],
@@ -138,10 +134,6 @@ def send_generic_message(recipient_id, event):
                         # "item_url":"https://eventful.com",
                         "image_url":event[1]['image']['small']['url'],
                         "buttons": [{
-                            "type":"web_url",
-                            "url":"https://eventful.com",
-                            "title":"View Website"
-                        }, {
                             "type":"web_url",
                             "url":event[1]['url'],
                             "title":"View Event"
