@@ -13,8 +13,8 @@ graph = facebook.GraphAPI(access_token=os.environ["PAGE_ACCESS_TOKEN"],
                             version='2.2')
 
 '''
-TODO: create method to send 'generic' messages that include a link to the event via eventful (just one for now)
-TODO: same as above but with 3, similar to the tutorial seen before when could click right
+TODO: same as above but with max(5, total_number of events)
+TODO: error check to make sure each has a picture, url, etc.
 TODO: use Yahoo Weather's method of confirming location before sending it to API
 TODO: create method to update greeting
 '''
@@ -104,6 +104,21 @@ def send_message(recipient_id, message_text):
 def send_generic_message(recipient_id, event):
     log("sending generic message to {recipient}".format(recipient=recipient_id))
 
+    list_of_cards = []
+    number_of_cards = min(3, int(events['total_items']))
+    for i in range(number_of_cards):
+        card = {
+            "title":event[i]['title'],
+            "subtitle":event[i]['venue_name'],
+            # "item_url":"https://eventful.com",
+            "image_url":event[i]['image']['medium']['url'],
+            "buttons": [{
+                "type":"web_url",
+                "url":event[i]['url'],
+                "title":"View Event"}
+        }
+        list_of_cards.extend(card)
+
     params = {
         "access_token": os.environ["PAGE_ACCESS_TOKEN"]
     }
@@ -119,27 +134,7 @@ def send_generic_message(recipient_id, event):
                 "type":"template",
                 "payload": {
                     "template_type":"generic",
-                    "elements": [{
-                        "title":event[0]['title'],
-                        "subtitle":event[0]['venue_name'],
-                        # "item_url":"https://eventful.com",
-                        "image_url":event[0]['image']['medium']['url'],
-                        "buttons": [{
-                            "type":"web_url",
-                            "url":event[0]['url'],
-                            "title":"View Event"
-                        }],
-                    }, {
-                        "title":event[1]['title'],
-                        "subtitle":event[1]['venue_name'],
-                        # "item_url":"https://eventful.com",
-                        "image_url":event[1]['image']['medium']['url'],
-                        "buttons": [{
-                            "type":"web_url",
-                            "url":event[1]['url'],
-                            "title":"View Event"
-                        }],
-                    }]
+                    "elements": list_of_cards
                 }
             }
         }
