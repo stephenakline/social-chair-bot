@@ -74,7 +74,7 @@ def get_events_in_area(sender_id, location):
         response =  'Sorry ' + first_name + ', nothing came up with that location. Please try again.'
         send_message(sender_id, response)
     else:
-        response =  first_name + ', looks like there are ' + str(events['total_items']) + ' total events going on this weekend.'
+        response =  first_name + ', looks like there are ' + str(events['total_items']) + ' total events going on this weekend. Here are a few:'
         send_message(sender_id, response)
         # response =  'The first listed event is ' + events['events']['event'][0]['title'] + ' at ' + events['events']['event'][0]['venue_name'] + '.'
         send_generic_message(sender_id, events['events']['event'])
@@ -111,12 +111,14 @@ def send_generic_message(recipient_id, events):
             "title":events[i]['title'],
             "subtitle":events[i]['venue_name'],
             # "item_url":"https://eventful.com",
-            # "image_url":events[i]['image']['medium']['url'],
             "buttons": [{
                 "type":"web_url",
                 "url":events[i]['url'],
-                "title":"View Event"}]
+                "title":"View Event Page"}]
         }]
+        if 'image' in events[i]:
+            if 'medium' in events[i]['image']
+                card[0]['image_url'] = events[i]['image']['medium']['url']
         list_of_cards += card
 
     params = {
