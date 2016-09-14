@@ -111,7 +111,7 @@ def send_generic_message(recipient_id, events):
             "title":events[i]['title'],
             "subtitle":events[i]['venue_name'],
             # "item_url":"https://eventful.com",
-            "image_url":events[i]['image']['medium']['url'],
+            # "image_url":events[i]['image']['medium']['url'],
             "buttons": [{
                 "type":"web_url",
                 "url":events[i]['url'],
