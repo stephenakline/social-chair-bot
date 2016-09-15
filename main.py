@@ -109,30 +109,8 @@ def get_events(sender_id, message):
         # TODO sleep for a second to let user read the first message
         send_generic_message(sender_id, events['events']['event'], int(events['total_items']), information)
 
-def send_message(recipient_id, message_text):
-    # log("sending message to {recipient}: {text}".format(recipient=recipient_id, text=message_text))
-
-    params = {
-        "access_token": os.environ["PAGE_ACCESS_TOKEN"]
-    }
-    headers = {
-        "Content-Type": "application/json"
-    }
-    data = json.dumps({
-        "recipient": {
-            "id": recipient_id
-        },
-        "message": {
-            "text": message_text
-        }
-    })
-    r = requests.post("https://graph.facebook.com/v2.6/me/messages", params=params, headers=headers, data=data)
-    # if r.status_code != 200:
-    #     log(r.status_code)
-    #     log(r.text)
-
 def send_generic_message(recipient_id, events, number_events, information):
-    # log("sending generic message to {recipient}".format(recipient=recipient_id))
+    log("sending generic message to {recipient}".format(recipient=recipient_id))
 
     list_of_cards = []
     number_of_cards = min(3, number_events)
@@ -151,16 +129,18 @@ def send_generic_message(recipient_id, events, number_events, information):
                 card[0]['image_url'] = events[i]['image']['medium']['url']
         list_of_cards += card
 
-    card = [{
-        "title":"All Events",
-        # "subtitle":events[i]['venue_name'],
-        # "item_url":"https://eventful.com",
-        "buttons": [{
-            "type":"web_url",
-            "url":"http://eventful.com/events?q=" + information[0] + "&l= " + information[1] + "&t=This+Weekend",
-            "title":"Full List of Events"}]
-    }]
-    list_of_cards += card
+    log("created the cards for output")
+
+    # card = [{
+    #     "title":"All Events",
+    #     # "subtitle":events[i]['venue_name'],
+    #     # "item_url":"https://eventful.com",
+    #     "buttons": [{
+    #         "type":"web_url",
+    #         "url":"http://eventful.com/events?q=" + information[0] + "&l= " + information[1] + "&t=This+Weekend",
+    #         "title":"Full List of Events"}]
+    # }]
+    # list_of_cards += card
 
     params = {
         "access_token": os.environ["PAGE_ACCESS_TOKEN"]
@@ -183,6 +163,30 @@ def send_generic_message(recipient_id, events, number_events, information):
         }
     })
     r = requests.post("https://graph.facebook.com/v2.6/me/messages", params=params, headers=headers, data=data)
+
+    log("send the cards to the user")
+
+def send_message(recipient_id, message_text):
+    # log("sending message to {recipient}: {text}".format(recipient=recipient_id, text=message_text))
+
+    params = {
+        "access_token": os.environ["PAGE_ACCESS_TOKEN"]
+    }
+    headers = {
+        "Content-Type": "application/json"
+    }
+    data = json.dumps({
+        "recipient": {
+            "id": recipient_id
+        },
+        "message": {
+            "text": message_text
+        }
+    })
+    r = requests.post("https://graph.facebook.com/v2.6/me/messages", params=params, headers=headers, data=data)
+    # if r.status_code != 200:
+    #     log(r.status_code)
+    #     log(r.text)
 
 def set_greeting():
     log("set greeting: {text}".format(text=GREETING))
