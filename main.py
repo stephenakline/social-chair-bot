@@ -130,6 +130,7 @@ def send_generic_message(recipient_id, events, number_events, information):
         list_of_cards += card
 
     log("created the cards for output")
+    log(list_of_cards)
 
     # card = [{
     #     "title":"All Events",
