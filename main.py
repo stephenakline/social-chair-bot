@@ -19,6 +19,7 @@ EVENTFUL_API = eventful.API(os.environ["EVENTFUL_TOKEN"])
 '''
 TODO: add more 'entities' to api.ai for use
 TODO: handle case where no 'entitie' or 'location' is given by user. what happens?
+TODO: add 4th (or nth) card to is just a link to the website for all queries (i.e. query on cateogry=x, location=y)
 TODO: use Yahoo Weather's method of confirming location before sending it to API
 TODO: create method to update greeting
 '''
@@ -54,6 +55,7 @@ def webhook():
                             get_events(sender_id, message_text)
                     except KeyError:
                         log('not text receives')
+                        log(messaging_event)
 
                 if messaging_event.get("delivery"):  # delivery confirmation
                     pass
