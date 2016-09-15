@@ -13,8 +13,7 @@ graph = facebook.GraphAPI(access_token=os.environ["PAGE_ACCESS_TOKEN"],
                             version='2.2')
 
 '''
-TODO: same as above but with max(5, total_number of events)
-TODO: error check to make sure each has a picture, url, etc.
+TODO: integrate Wit.ai to extract category/activity and location from user's questions
 TODO: use Yahoo Weather's method of confirming location before sending it to API
 TODO: create method to update greeting
 '''
@@ -76,8 +75,8 @@ def get_events_in_area(sender_id, location):
     else:
         response =  first_name + ', looks like there are ' + str(events['total_items']) + ' total events going on this weekend. Here are a few:'
         send_message(sender_id, response)
-        # response =  'The first listed event is ' + events['events']['event'][0]['title'] + ' at ' + events['events']['event'][0]['venue_name'] + '.'
-        send_generic_message(sender_id, events['events']['event'])
+        # TODO sleep for a second to let user read the first message
+        send_generic_message(sender_id, events['events']['event'], int(events['total_items']))
 
 def send_message(recipient_id, message_text):
     log("sending message to {recipient}: {text}".format(recipient=recipient_id, text=message_text))
@@ -101,11 +100,11 @@ def send_message(recipient_id, message_text):
     #     log(r.status_code)
     #     log(r.text)
 
-def send_generic_message(recipient_id, events):
+def send_generic_message(recipient_id, events, number_events):
     log("sending generic message to {recipient}".format(recipient=recipient_id))
 
     list_of_cards = []
-    number_of_cards = 3 # min(3, int(events['total_items']))
+    number_of_cards = min(3, number_events)
     for i in range(number_of_cards):
         card = [{
             "title":events[i]['title'],
