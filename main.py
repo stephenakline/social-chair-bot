@@ -1,7 +1,7 @@
 import sys
 import os
 import json
-import eventful
+import requests
 import facebook
 import simplejson
 import apiai
@@ -11,20 +11,23 @@ from flask import Flask, request
 
 main = Flask(__name__)
 
-FB_GRAPH_API = facebook.GraphAPI(access_token=os.environ["PAGE_ACCESS_TOKEN"],
-                            version='2.2')
-API_AI       = apiai.ApiAI(os.environ["API_AI_TOKEN"])
-EVENTFUL_API = eventful.API(os.environ["EVENTFUL_TOKEN"])
+FB_GRAPH_API   = facebook.GraphAPI(access_token=os.environ["PAGE_ACCESS_TOKEN"], version='2.2')
+API_AI         = apiai.ApiAI(os.environ["API_AI_TOKEN"])
+EVENTFUL_TOKEN = os.environ["EVENTFUL_TOKEN"]
 
 '''
-TODO: add more 'entities' to api.ai for use
-TODO: handle case where no 'entitie' or 'location' is given by user. what happens?
+TODO: handle case where no 'entity' or 'location' is given by user. what happens?
 TODO: add 4th (or nth) card to is just a link to the website for all queries (i.e. query on cateogry=x, location=y)
+TODO: can we change the order or results that come out? --> https://github.com/SurgeClub/research/blob/24995b923b18aacffb6552754871e87b386bdffb/eventful.py
+TODO: add option to buy tickts?
+TODO: add initial message that explains usage?
+TODO: add pictures for events that do not have pictures (graph some stock photos?)
 TODO: use Yahoo Weather's method of confirming location before sending it to API
-TODO: create method to update greeting
+TODO: add more 'entities' to api.ai for use
+TODO: have Kracov help update the Facebook Page
 '''
 
-GREETING = "Hello! Social Chair, at your service. Tell me what city you are in, and I will tell you what is going on this weekend."
+GREETING = "Hello! Social Chair here, to help you find things to do this weekend."
 
 @main.route('/', methods=['GET'])
 def verify():
@@ -83,10 +86,19 @@ def extract_data(message):
 def get_events(sender_id, message):
     information = extract_data(message)
 
-    events = EVENTFUL_API.call('/events/search', t='This Weekend', q=information[0], l=information[1])
-    log('query: ' + message + '; category: ' + information[0] + '; location: ' + information[1])
+    params = {
+        "app_key": EVENTFUL_TOKEN,
+        "location": information[1],
+        "category": information[0],
+        "include": "categories,popularity,tickets,subcategories",
+        "page_size": "100",
+        "sort_order": "popularity",
+        "date": "This Weekend",
+    }
 
-    # first_name = get_user_details(sender_id)
+    r = requests.get('https://api.eventful.com/json/events/search', params=params)
+    events = r.json()
+    log('query: ' + message + '; category: ' + information[0] + '; location: ' + information[1])
 
     if events['total_items'] == '0':
         response =  'Sorry, no events came up. Try again with a different search.'
@@ -95,7 +107,7 @@ def get_events(sender_id, message):
         response =  'Looks like there are ' + str(events['total_items']) + ' total events going on this weekend. Here are a few:'
         send_message(sender_id, response)
         # TODO sleep for a second to let user read the first message
-        send_generic_message(sender_id, events['events']['event'], int(events['total_items']))
+        send_generic_message(sender_id, events['events']['event'], int(events['total_items']), information)
 
 def send_message(recipient_id, message_text):
     # log("sending message to {recipient}: {text}".format(recipient=recipient_id, text=message_text))
@@ -119,7 +131,7 @@ def send_message(recipient_id, message_text):
     #     log(r.status_code)
     #     log(r.text)
 
-def send_generic_message(recipient_id, events, number_events):
+def send_generic_message(recipient_id, events, number_events, information):
     # log("sending generic message to {recipient}".format(recipient=recipient_id))
 
     list_of_cards = []
@@ -138,6 +150,17 @@ def send_generic_message(recipient_id, events, number_events):
             if events[i]['image'] != None and 'medium' in events[i]['image']:
                 card[0]['image_url'] = events[i]['image']['medium']['url']
         list_of_cards += card
+
+    card = [{
+        "title":"All Events",
+        # "subtitle":events[i]['venue_name'],
+        # "item_url":"https://eventful.com",
+        "buttons": [{
+            "type":"web_url",
+            "url":"http://eventful.com/events?q=" + information[0] + "&l= " + information[1] + "&t=This+Weekend",
+            "title":"Full List of Events"}]
+    }]
+    list_of_cards += card
 
     params = {
         "access_token": os.environ["PAGE_ACCESS_TOKEN"]
