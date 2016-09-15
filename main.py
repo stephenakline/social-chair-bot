@@ -1,7 +1,6 @@
 import sys
 import os
 import json
-import requests
 import facebook
 import simplejson
 import apiai
