@@ -17,7 +17,8 @@ API_AI       = apiai.ApiAI(os.environ["API_AI_TOKEN"])
 EVENTFUL_API = eventful.API(os.environ["EVENTFUL_TOKEN"])
 
 '''
-TODO: integrate api.ai to extract category/activity and location from user's questions
+TODO: add more 'entities' to api.ai for use
+TODO: handle case where no 'entitie' or 'location' is given by user. what happens?
 TODO: use Yahoo Weather's method of confirming location before sending it to API
 TODO: create method to update greeting
 '''
@@ -81,20 +82,21 @@ def get_events(sender_id, message):
     information = extract_data(message)
 
     events = EVENTFUL_API.call('/events/search', t='This Weekend', q=information[0], l=information[1])
+    log('query: ' + message + '; category: ' + information[0] + '; location: ' + information[1])
 
-    first_name = get_user_details(sender_id)
+    # first_name = get_user_details(sender_id)
 
     if events['total_items'] == '0':
-        response =  'Sorry ' + first_name + ', nothing came up with that location. Please try again.'
+        response =  'Sorry, no events came up. Try again with a different search.'
         send_message(sender_id, response)
     else:
-        response =  first_name + ', looks like there are ' + str(events['total_items']) + ' total events going on this weekend. Here are a few:'
+        response =  'Looks like there are ' + str(events['total_items']) + ' total events going on this weekend. Here are a few:'
         send_message(sender_id, response)
         # TODO sleep for a second to let user read the first message
         send_generic_message(sender_id, events['events']['event'], int(events['total_items']))
 
 def send_message(recipient_id, message_text):
-    log("sending message to {recipient}: {text}".format(recipient=recipient_id, text=message_text))
+    # log("sending message to {recipient}: {text}".format(recipient=recipient_id, text=message_text))
 
     params = {
         "access_token": os.environ["PAGE_ACCESS_TOKEN"]
@@ -116,7 +118,7 @@ def send_message(recipient_id, message_text):
     #     log(r.text)
 
 def send_generic_message(recipient_id, events, number_events):
-    log("sending generic message to {recipient}".format(recipient=recipient_id))
+    # log("sending generic message to {recipient}".format(recipient=recipient_id))
 
     list_of_cards = []
     number_of_cards = min(3, number_events)
@@ -130,7 +132,6 @@ def send_generic_message(recipient_id, events, number_events):
                 "url":events[i]['url'],
                 "title":"View Event Page"}]
         }]
-        log(events[i]['image'])
         if 'image' in events[i]:
             if events[i]['image'] != None and 'medium' in events[i]['image']:
                 card[0]['image_url'] = events[i]['image']['medium']['url']
