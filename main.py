@@ -123,9 +123,9 @@ def send_generic_message(recipient_id, events, number_events, information):
                 "url":events[i]['url'],
                 "title":"View Event Page"}]
         }]
-        if 'image' in events[i]:
-            if events[i]['image'] != None and 'medium' in events[i]['image']:
-                card[0]['image_url'] = events[i]['image']['medium']['url']
+        # if 'image' in events[i]:
+        #     if events[i]['image'] != None and 'medium' in events[i]['image']:
+        #         card[0]['image_url'] = events[i]['image']['medium']['url']
         list_of_cards += card
 
     log("created the cards for output")
