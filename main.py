@@ -3,17 +3,21 @@ import os
 import json
 import eventful
 import facebook
+import simplejson
+import apiai
 
 import requests
 from flask import Flask, request
 
 main = Flask(__name__)
 
-graph = facebook.GraphAPI(access_token=os.environ["PAGE_ACCESS_TOKEN"],
+FB_GRAPH_API = facebook.GraphAPI(access_token=os.environ["PAGE_ACCESS_TOKEN"],
                             version='2.2')
+API_AI       = apiai.ApiAI(os.environ["API_AI_TOKEN"])
+EVENTFUL_API = eventful.API(os.environ["EVENTFUL_TOKEN"])
 
 '''
-TODO: integrate Wit.ai to extract category/activity and location from user's questions
+TODO: integrate api.ai to extract category/activity and location from user's questions
 TODO: use Yahoo Weather's method of confirming location before sending it to API
 TODO: create method to update greeting
 '''
@@ -46,7 +50,7 @@ def webhook():
                     try:
                         message_text = messaging_event["message"]["text"]  # the message's text
                         if sender_id != os.environ["SOCIAL_CHAIR_BOT"]:
-                            get_events_in_area(sender_id, message_text)
+                            get_events(sender_id, message_text)
                     except KeyError:
                         log('not text receives')
 
@@ -59,13 +63,24 @@ def webhook():
     return "ok", 200
 
 def get_user_details(sender_id):
-    profile = graph.get_object(sender_id)
+    profile = FB_GRAPH_API.get_object(sender_id)
     message = profile['first_name']
     return message
 
-def get_events_in_area(sender_id, location):
-    api = eventful.API(os.environ["EVENTFUL_TOKEN"])
-    events = api.call('/events/search', t='This Weekend', l=location)
+def extract_data(message):
+    request = API_AI.text_request()
+    request.lang = 'en'
+    request.query = message
+    answer = request.getresponse()
+    data = simplejson.loads(answer.read())
+    category = data['result']['parameters']['category-type']
+    location = data['result']['parameters']['geo-city']
+    return [category, location]
+
+def get_events(sender_id, message):
+    information = extract_data(message)
+
+    events = EVENTFUL_API.call('/events/search', t='This Weekend', q=information[0], l=information[1])
 
     first_name = get_user_details(sender_id)
 
