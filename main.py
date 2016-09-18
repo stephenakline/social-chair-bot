@@ -15,12 +15,12 @@ API_AI         = apiai.ApiAI(os.environ["API_AI_TOKEN"])
 EVENTFUL_TOKEN = os.environ["EVENTFUL_TOKEN"]
 
 '''
+TODO: need to add a delay while bot is pulling events from EVENTFUL, may be reason for double messages
 TODO: handle case where no 'entity' or 'location' is given by user. what happens?
 TODO: add 4th (or nth) card to is just a link to the website for all queries (i.e. query on cateogry=x, location=y)
-TODO: can we change the order or results that come out? --> https://github.com/SurgeClub/research/blob/24995b923b18aacffb6552754871e87b386bdffb/eventful.py
-TODO: add option to buy tickts?
 TODO: add initial message that explains usage?
 TODO: add pictures for events that do not have pictures (graph some stock photos?)
+TODO: add option to buy tickets?
 TODO: use Yahoo Weather's method of confirming location before sending it to API
 TODO: add more 'entities' to api.ai for use
 TODO: have Kracov help update the Facebook Page
@@ -103,7 +103,7 @@ def get_events(sender_id, message):
         response =  'Sorry, no events came up. Try again with a different search.'
         send_message(sender_id, response)
     else:
-        response =  'Looks like there are ' + str(events['total_items']) + ' total events going on this weekend. Here are a few:'
+        response =  'Found around ' + str(events['total_items']) + ' events going on this weekend. Here are a few:'
         send_message(sender_id, response)
         # TODO sleep for a second to let user read the first message
         send_generic_message(sender_id, events['events']['event'], int(events['total_items']), information)
@@ -117,7 +117,7 @@ def send_generic_message(recipient_id, events, number_events, information):
         card = [{
             "title":events[i]['title'],
             "subtitle":events[i]['venue_name'],
-            # "item_url":"https://eventful.com",
+            "item_url":"https://eventful.com",
             "buttons": [{
                 "type":"web_url",
                 "url":events[i]['url'],
@@ -131,16 +131,16 @@ def send_generic_message(recipient_id, events, number_events, information):
     log("created the cards for output")
     log(list_of_cards)
 
-    # card = [{
-    #     "title":"All Events",
-    #     # "subtitle":events[i]['venue_name'],
-    #     # "item_url":"https://eventful.com",
-    #     "buttons": [{
-    #         "type":"web_url",
-    #         "url":"http://eventful.com/events?q=" + information[0] + "&l= " + information[1] + "&t=This+Weekend",
-    #         "title":"Full List of Events"}]
-    # }]
-    # list_of_cards += card
+    card = [{
+        "title":"All Events",
+        "subtitle":events[i]['venue_name'],
+        "item_url":"https://eventful.com",
+        "buttons": [{
+            "type":"web_url",
+            "url":"http://eventful.com/events?q=" + information[0] + "&l= " + information[1] + "&t=This+Weekend",
+            "title":"Full List of Events"}]
+    }]
+    list_of_cards += card
 
     params = {
         "access_token": os.environ["PAGE_ACCESS_TOKEN"]
