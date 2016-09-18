@@ -17,7 +17,6 @@ EVENTFUL_TOKEN = os.environ["EVENTFUL_TOKEN"]
 '''
 TODO: need to add a delay while bot is pulling events from EVENTFUL, may be reason for double messages
 TODO: handle case where no 'entity' or 'location' is given by user. what happens?
-TODO: add 4th (or nth) card to is just a link to the website for all queries (i.e. query on cateogry=x, location=y)
 TODO: add initial message that explains usage?
 TODO: add pictures for events that do not have pictures (graph some stock photos?)
 TODO: add option to buy tickets?
@@ -95,15 +94,23 @@ def get_events(sender_id, message):
         "date": "This Weekend",
     }
 
+    log('query: ' + message + '; category: ' + information[0] + '; location: ' + information[1])
+    if information[1] == None:
+        response = 'You need to give me a location to find events.'
+        send_message(sender_id, response)
+        return
+
     r = requests.get('https://api.eventful.com/json/events/search', params=params)
     events = r.json()
-    log('query: ' + message + '; category: ' + information[0] + '; location: ' + information[1])
 
     if events['total_items'] == '0':
         response =  'Sorry, no events came up. Try again with a different search.'
         send_message(sender_id, response)
     else:
-        response =  'Found around ' + str(events['total_items']) + ' events going on this weekend. Here are a few:'
+        if information[0] == None:
+            response =  'Found around ' + str(events['total_items']) + ' events going on this weekend. Here are a few:'
+        else:
+            response =  'Found around ' + str(events['total_items']) + ' ' + information[0] + ' events going on this weekend. Here are a few:'
         send_message(sender_id, response)
         # TODO sleep for a second to let user read the first message
         send_generic_message(sender_id, events['events']['event'], int(events['total_items']), information)
@@ -132,7 +139,7 @@ def send_generic_message(recipient_id, events, number_events, information):
     log(list_of_cards)
 
     card = [{
-        "title":"All Events",
+        "title":"Events in " + information[1],
         "subtitle":events[i]['venue_name'],
         "item_url":"https://eventful.com",
         "buttons": [{
